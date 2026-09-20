@@ -1,0 +1,53 @@
+.filters { padding: 20px; }
+
+.car-card {
+  display: block;
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  color: var(--text-primary);
+}
+.car-card > a { display: block; color: inherit; }
+.car-card:hover { box-shadow: var(--shadow-md); transform: translateY(-4px); }
+.car-thumb {
+  position: relative;
+  height: 150px;
+  background: var(--bg-muted);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 52px;
+  overflow: hidden;
+}
+.car-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.car-card:hover .car-thumb img { transform: scale(1.08); }
+.admin-actions {
+  display: flex;
+  gap: 8px;
+  padding: 0 18px 16px;
+}
+.admin-actions .btn { flex: 1; }
+.photo-count {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(15,23,42,0.75);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+.car-body { padding: 18px; }
+.price { font-size: 18px; color: var(--color-primary); }
+.booked-range {
+  margin-top: 6px;
+  color: var(--color-warning);
+  font-weight: 600;
+}

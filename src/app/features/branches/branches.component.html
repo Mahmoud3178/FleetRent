@@ -1,0 +1,53 @@
+<section class="container page">
+  <div class="section-title">
+    <div>
+      <h2>Branches</h2>
+      <p class="text-sm">Manage your rental locations</p>
+    </div>
+    <button class="btn btn-accent btn-sm" (click)="openModal()">+ Add Branch</button>
+  </div>
+
+  @if (loading()) {
+    <div class="flex-center" style="padding:60px 0;"><span class="spinner"></span></div>
+  } @else if (branches().length === 0) {
+    <div class="empty-state">No branches yet.</div>
+  } @else {
+    <div class="grid grid-3">
+      @for (b of branches(); track b.id) {
+        <div class="card">
+          <h3>{{ b.name }}</h3>
+          <p class="text-sm">📍 {{ b.city }}</p>
+          <p class="text-sm text-muted">{{ b.address }}</p>
+        </div>
+      }
+    </div>
+  }
+</section>
+
+@if (showModal()) {
+  <div class="modal-overlay" (click)="showModal.set(false)">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <h3>Add Branch</h3>
+      <form [formGroup]="form" (ngSubmit)="submit()" class="mt-16">
+        <div class="form-group">
+          <label class="form-label">Name</label>
+          <input class="form-control" formControlName="name" placeholder="Downtown Branch" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">City</label>
+          <input class="form-control" formControlName="city" placeholder="Cairo" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Address</label>
+          <input class="form-control" formControlName="address" placeholder="Full address" />
+        </div>
+        <div class="flex gap-12 mt-16">
+          <button type="button" class="btn btn-outline w-full" (click)="showModal.set(false)">Cancel</button>
+          <button type="submit" class="btn btn-accent w-full" [disabled]="submitting()">
+            @if (submitting()) { <span class="spinner"></span> } @else { Save }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

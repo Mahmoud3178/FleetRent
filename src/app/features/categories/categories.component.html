@@ -1,0 +1,54 @@
+<section class="container page">
+  <div class="section-title">
+    <div>
+      <h2>Car Categories</h2>
+      <p class="text-sm">Define pricing tiers for your fleet</p>
+    </div>
+    <button class="btn btn-accent btn-sm" (click)="openModal()">+ Add Category</button>
+  </div>
+
+  @if (loading()) {
+    <div class="flex-center" style="padding:60px 0;"><span class="spinner"></span></div>
+  } @else if (categories().length === 0) {
+    <div class="empty-state">No categories yet.</div>
+  } @else {
+    <div class="grid grid-4">
+      @for (c of categories(); track c.id) {
+        <div class="card text-center">
+          <h3>{{ c.name }}</h3>
+          <p class="price-tag">{{ c.dailyRate }} <span class="text-muted text-sm">EGP/day</span></p>
+          <div class="flex gap-8 mt-16">
+            <button class="btn btn-outline btn-sm w-full" (click)="openEditModal(c)">✏️ Edit</button>
+            <button class="btn btn-danger btn-sm w-full" [disabled]="deletingId() === c.id" (click)="deleteCategory(c)">
+              @if (deletingId() === c.id) { <span class="spinner"></span> } @else { 🗑️ Delete }
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</section>
+
+@if (showModal()) {
+  <div class="modal-overlay" (click)="showModal.set(false)">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <h3>{{ editingId() ? 'Edit Category' : 'Add Category' }}</h3>
+      <form [formGroup]="form" (ngSubmit)="submit()" class="mt-16">
+        <div class="form-group">
+          <label class="form-label">Name</label>
+          <input class="form-control" formControlName="name" placeholder="Economy, Luxury, SUV..." />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Daily rate (EGP)</label>
+          <input class="form-control" type="number" formControlName="dailyRate" />
+        </div>
+        <div class="flex gap-12 mt-16">
+          <button type="button" class="btn btn-outline w-full" (click)="showModal.set(false)">Cancel</button>
+          <button type="submit" class="btn btn-accent w-full" [disabled]="submitting()">
+            @if (submitting()) { <span class="spinner"></span> } @else { Save }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

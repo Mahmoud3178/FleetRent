@@ -1,0 +1,106 @@
+.navbar {
+  background: var(--color-primary);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+}
+
+.navbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 68px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: 800;
+  color: white;
+}
+.brand-icon { font-size: 24px; }
+.brand-accent { color: var(--color-accent); }
+
+.links {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.links a {
+  color: rgba(255,255,255,0.75);
+  font-weight: 600;
+  font-size: 14.5px;
+  transition: var(--transition);
+  padding: 6px 0;
+  border-bottom: 2px solid transparent;
+}
+.links a:hover, .links a.active {
+  color: white;
+  border-bottom-color: var(--color-accent);
+}
+
+.nav-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(255,255,255,0.2);
+}
+
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+.user-info { display: flex; flex-direction: column; line-height: 1.2; }
+.user-info strong { color: white; font-size: 13px; }
+.user-info small { color: rgba(255,255,255,0.6); font-size: 11px; }
+
+.burger {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+.burger span {
+  width: 22px;
+  height: 2px;
+  background: white;
+  border-radius: 2px;
+}
+
+@media (max-width: 860px) {
+  .burger { display: flex; }
+  .links {
+    position: absolute;
+    top: 68px;
+    left: 0;
+    right: 0;
+    background: var(--color-primary);
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px 24px 24px;
+    gap: 14px;
+    display: none;
+  }
+  .links.open { display: flex; }
+  .nav-divider { display: none; }
+  .user-chip { padding: 10px 0; }
+}

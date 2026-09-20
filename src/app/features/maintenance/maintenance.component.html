@@ -1,0 +1,96 @@
+<section class="container page">
+  <div class="section-title">
+    <div>
+      <h2>Maintenance Records</h2>
+      <p class="text-sm">Log service work and track ongoing maintenance</p>
+    </div>
+    <button class="btn btn-accent btn-sm" (click)="openModal()">+ Log Maintenance</button>
+  </div>
+
+  @if (loading()) {
+    <div class="flex-center" style="padding:60px 0;"><span class="spinner"></span></div>
+  } @else if (records().length === 0) {
+    <div class="empty-state">No maintenance records yet.</div>
+  } @else {
+    <div class="table-wrap card">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Car</th>
+            <th>Description</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Cost</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of records(); track r.id) {
+            <tr>
+              <td><strong>{{ r.carPlateNumber }}</strong></td>
+              <td>{{ r.description }}</td>
+              <td>{{ r.startDate | date:'mediumDate' }}</td>
+              <td>
+                @if (r.endDate) {
+                  {{ r.endDate | date:'mediumDate' }}
+                } @else {
+                  <span class="badge badge-warning">In progress</span>
+                }
+              </td>
+              <td>{{ r.cost }} EGP</td>
+              <td>
+                @if (!r.endDate) {
+                  <button class="btn btn-primary btn-sm" (click)="complete(r.id)" [disabled]="completingId() === r.id">
+                    @if (completingId() === r.id) { <span class="spinner"></span> } @else { Mark Complete }
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
+
+@if (showModal()) {
+  <div class="modal-overlay" (click)="showModal.set(false)">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <h3>Log Maintenance</h3>
+      <p class="text-sm mb-24">This will mark the car as "Under Maintenance"</p>
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="form-group">
+          <label class="form-label">Car</label>
+          <select class="form-control" formControlName="carId">
+            <option [ngValue]="null" disabled>Select a car</option>
+            @for (c of cars(); track c.id) {
+              <option [ngValue]="c.id">{{ c.plateNumber }} — {{ c.brand }} {{ c.model }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <input class="form-control" formControlName="description" placeholder="Oil change, brake pads..." />
+        </div>
+        <div class="grid grid-2">
+          <div class="form-group">
+            <label class="form-label">Start date</label>
+            <input class="form-control" type="date" formControlName="startDate" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cost (EGP)</label>
+            <input class="form-control" type="number" formControlName="cost" />
+          </div>
+        </div>
+
+        <div class="flex gap-12 mt-16">
+          <button type="button" class="btn btn-outline w-full" (click)="showModal.set(false)">Cancel</button>
+          <button type="submit" class="btn btn-accent w-full" [disabled]="submitting()">
+            @if (submitting()) { <span class="spinner"></span> } @else { Save }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

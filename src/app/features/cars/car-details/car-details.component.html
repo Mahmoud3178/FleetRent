@@ -1,0 +1,111 @@
+@if (loading()) {
+  <div class="flex-center" style="padding:100px 0;"><span class="spinner"></span></div>
+} @else if (!car()) {
+  <div class="empty-state">Car not found. <a routerLink="/cars" class="link-accent">Back to fleet</a></div>
+} @else {
+  <section class="container page">
+    <a routerLink="/cars" class="text-sm text-muted">← Back to fleet</a>
+
+    <div class="details-grid mt-24">
+      <div class="card visual-card">
+        @if (activeImageUrl(); as mainUrl) {
+          <div class="big-thumb has-image">
+            <img [src]="mainUrl" alt="{{ car()!.brand }} {{ car()!.model }}" (error)="onImgError($event)" />
+          </div>
+        } @else {
+          <div class="big-thumb"><span>🚗</span></div>
+        }
+
+        @if (orderedImages().length > 1) {
+          <div class="thumb-strip">
+            @for (img of orderedImages(); track img.id; let i = $index) {
+              <button
+                type="button"
+                class="thumb-btn"
+                [class.active]="i === activeImageIndex()"
+                (click)="selectImage(i)">
+                <img [src]="toFullUrl(img.imageUrl)" alt="thumbnail {{ i + 1 }}" />
+              </button>
+            }
+          </div>
+        }
+
+        <h2 class="mt-16">{{ car()!.brand }} {{ car()!.model }}</h2>
+        <span class="badge" [class]="car()!.status === 'Available' ? 'badge-success' : 'badge-warning'">
+          {{ car()!.status }}
+        </span>
+        @if (activeBooking(); as ab) {
+          <p class="text-sm booked-range mt-8">
+            📅 Booked: {{ ab.startDate | date:'mediumDate' }} → {{ ab.endDate | date:'mediumDate' }}
+          </p>
+        }
+
+        <div class="spec-grid mt-24">
+          <div class="spec"><span class="text-muted text-sm">Year</span><strong>{{ car()!.year }}</strong></div>
+          <div class="spec"><span class="text-muted text-sm">Plate</span><strong>{{ car()!.plateNumber }}</strong></div>
+          <div class="spec"><span class="text-muted text-sm">Mileage</span><strong>{{ car()!.currentMileage }} km</strong></div>
+          <div class="spec"><span class="text-muted text-sm">Category</span><strong>{{ car()!.categoryName }}</strong></div>
+          <div class="spec"><span class="text-muted text-sm">Branch</span><strong>{{ car()!.branchName }}</strong></div>
+          <div class="spec"><span class="text-muted text-sm">Daily rate</span><strong>{{ car()!.dailyRate ?? '—' }} EGP</strong></div>
+        </div>
+      </div>
+
+      <div class="card booking-card">
+        @if (auth.hasRole('Admin', 'Employee')) {
+          <h3>Manage this car</h3>
+          <p class="text-sm text-muted mt-8">
+            Booking is for customers only. As {{ auth.hasRole('Admin') ? 'an Admin' : 'an Employee' }},
+            you can edit this car's details, status and photos instead.
+          </p>
+          <a [routerLink]="['/admin/cars', car()!.id, 'edit']" class="btn btn-outline btn-block mt-16">
+            ✏️ Edit this car
+          </a>
+        } @else {
+          <h3>Book this car</h3>
+
+          @if (car()!.status !== 'Available') {
+            <div class="empty-state" style="padding:30px 0;">
+              This car is currently <strong>{{ car()!.status }}</strong> and not available for booking.
+              @if (activeBooking(); as ab) {
+                <br />
+                <span class="text-sm">It's reserved from {{ ab.startDate | date:'mediumDate' }} to {{ ab.endDate | date:'mediumDate' }}.</span>
+              }
+            </div>
+          } @else {
+            <form [formGroup]="form" (ngSubmit)="submitBooking()">
+              <div class="form-group">
+                <label class="form-label">Start date</label>
+                <input class="form-control" type="date" formControlName="startDate" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">End date</label>
+                <input class="form-control" type="date" formControlName="endDate" />
+              </div>
+
+              @if (estimatedDays() > 0) {
+                <div class="estimate-box">
+                  <div class="flex-between">
+                    <span class="text-sm">Duration</span>
+                    <strong>{{ estimatedDays() }} day(s)</strong>
+                  </div>
+                  <div class="flex-between mt-8">
+                    <span class="text-sm">Estimated total</span>
+                    <strong class="price">{{ estimatedCost() }} EGP</strong>
+                  </div>
+                </div>
+              }
+
+              <button class="btn btn-accent btn-block mt-16" type="submit" [disabled]="booking()">
+                @if (booking()) { <span class="spinner"></span> } @else { Confirm Booking }
+              </button>
+
+              @if (!auth.isLoggedIn()) {
+                <p class="text-sm text-center mt-8">You'll need to sign in first.</p>
+              }
+            </form>
+          }
+        }
+      </div>
+    </div>
+  </section>
+}

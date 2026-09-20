@@ -1,0 +1,50 @@
+<section class="container page">
+  <div class="section-title">
+    <div>
+      <h2>My Bookings</h2>
+      <p class="text-sm">Track and manage your reservations</p>
+    </div>
+    <a routerLink="/cars" class="btn btn-accent btn-sm">+ New Booking</a>
+  </div>
+
+  @if (loading()) {
+    <div class="flex-center" style="padding:60px 0;"><span class="spinner"></span></div>
+  } @else if (myBookings().length === 0) {
+    <div class="empty-state">
+      You have no bookings yet. <a routerLink="/cars" class="link-accent">Browse cars</a> to make your first one.
+    </div>
+  } @else {
+    <div class="table-wrap card">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Car</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Status</th>
+            <th>Est. Cost</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (b of myBookings(); track b.id) {
+            <tr>
+              <td><strong>{{ b.carPlateNumber }}</strong></td>
+              <td>{{ b.startDate | date:'mediumDate' }}</td>
+              <td>{{ b.endDate | date:'mediumDate' }}</td>
+              <td><span class="badge" [class]="statusBadge(b.status)">{{ b.status }}</span></td>
+              <td>{{ b.estimatedCost }} EGP</td>
+              <td>
+                @if (b.status === 'Pending' || b.status === 'Confirmed') {
+                  <button class="btn btn-danger btn-sm" (click)="cancel(b.id)" [disabled]="cancelingId() === b.id">
+                    @if (cancelingId() === b.id) { <span class="spinner"></span> } @else { Cancel }
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

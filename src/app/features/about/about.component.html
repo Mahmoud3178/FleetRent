@@ -1,0 +1,104 @@
+<section class="about-hero">
+  <div class="about-hero-bg ken-burns"></div>
+  <div class="about-hero-overlay"></div>
+  <div class="container about-hero-inner">
+    <span class="eyebrow">About FleetRent</span>
+    <h1>Built to make car rental feel effortless.</h1>
+    <p class="hero-sub">
+      We started FleetRent to fix what we hated most about renting a car: hidden fees,
+      slow paperwork, and cars that never look like their photos. Here's our story.
+    </p>
+  </div>
+</section>
+
+<!-- ===== Stats ===== -->
+<section class="stats-strip">
+  <div class="container grid grid-4">
+    <div class="stat-box" appReveal="up">
+      <span class="stat-number"><span appCountUp [countTo]="500" suffix="+">0</span></span>
+      <p class="text-sm text-muted">Cars in the fleet</p>
+    </div>
+    <div class="stat-box" appReveal="up" [revealDelay]="80">
+      <span class="stat-number"><span appCountUp [countTo]="24" suffix="+">0</span></span>
+      <p class="text-sm text-muted">Branches nationwide</p>
+    </div>
+    <div class="stat-box" appReveal="up" [revealDelay]="160">
+      <span class="stat-number"><span appCountUp [countTo]="12000" suffix="+">0</span></span>
+      <p class="text-sm text-muted">Completed rentals</p>
+    </div>
+    <div class="stat-box" appReveal="up" [revealDelay]="240">
+      <span class="stat-number"><span appCountUp [countTo]="98" suffix="%">0</span></span>
+      <p class="text-sm text-muted">On-time handovers</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Story ===== -->
+<section class="container page">
+  <div class="story-grid">
+    <div appReveal="up">
+      <span class="eyebrow" style="color:var(--color-accent)">Our story</span>
+      <h2 class="mt-8">From one branch to a nationwide fleet</h2>
+      <p class="mt-16 text-muted">
+        FleetRent began as a small operation trying to solve a simple problem: renting a car
+        shouldn't feel like a negotiation. Every price is calculated up front, every car is
+        inspected before handover, and every booking is confirmed instantly — no phone calls,
+        no waiting rooms.
+      </p>
+      <p class="mt-16 text-muted">
+        Today we manage a growing fleet across multiple branches, with a platform built to keep
+        the whole cycle — booking, pickup, and return — fast and transparent for both renters
+        and our operations team.
+      </p>
+      <a routerLink="/cars" class="btn btn-accent mt-24">Browse the fleet</a>
+    </div>
+    <div class="story-image ken-burns" appReveal="scale"></div>
+  </div>
+</section>
+
+<!-- ===== Values ===== -->
+<section class="values-section">
+  <div class="container">
+    <div class="section-title" appReveal="up">
+      <h2>What we stand for</h2>
+    </div>
+    <div class="grid grid-4">
+      @for (v of values; track v.title; let i = $index) {
+        <div class="feature-box" appReveal="up" [revealDelay]="i * 80">
+          <span class="feature-icon">{{ v.icon }}</span>
+          <h4>{{ v.title }}</h4>
+          <p class="text-sm text-muted">{{ v.text }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ===== Timeline ===== -->
+<section class="container page">
+  <div class="section-title" appReveal="up">
+    <h2>Our journey</h2>
+  </div>
+  <div class="timeline">
+    @for (item of timeline; track item.year; let i = $index) {
+      <div class="timeline-item" appReveal="up" [revealDelay]="i * 100">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <strong>{{ item.year }}</strong>
+          <p class="text-sm text-muted">{{ item.text }}</p>
+        </div>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section class="cta-band" appReveal="up">
+  <div class="container flex-between">
+    <div>
+      <h2 style="color:white;">Ready to hit the road?</h2>
+      <p style="color:rgba(255,255,255,0.75)">Browse the fleet and book your next ride in under two minutes.</p>
+    </div>
+    <a routerLink="/cars" class="btn btn-accent">Browse Cars →</a>
+  </div>
+</section>

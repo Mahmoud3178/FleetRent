@@ -1,0 +1,111 @@
+<section class="container page">
+  <div class="section-title">
+    <div>
+      <h2>Our Fleet</h2>
+      <p class="text-sm">Browse and filter available cars</p>
+    </div>
+  </div>
+
+  <div class="filters card">
+    <div class="grid grid-4">
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">Search</label>
+        <input class="form-control" placeholder="Brand, model, plate..."
+               [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" />
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">Branch</label>
+        <select class="form-control" [ngModel]="branchFilter()"
+                (ngModelChange)="branchFilter.set($event)">
+          <option [ngValue]="null">All branches</option>
+          @for (b of branches(); track b.id) {
+            <option [ngValue]="b.id">{{ b.name }} ({{ b.city }})</option>
+          }
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">Category</label>
+        <select class="form-control" [ngModel]="categoryFilter()"
+                (ngModelChange)="categoryFilter.set($event)">
+          <option [ngValue]="null">All categories</option>
+          @for (c of categories(); track c.id) {
+            <option [ngValue]="c.id">{{ c.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">Status</label>
+        <select class="form-control" [ngModel]="statusFilter()"
+                (ngModelChange)="statusFilter.set($event)">
+          <option value="Available">Available only</option>
+          <option value="All">All statuses</option>
+          <option value="Rented">Rented</option>
+          <option value="UnderMaintenance">Under maintenance</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-24">
+    @if (loading()) {
+      <div class="grid grid-3">
+        @for (i of [1,2,3,4,5,6]; track i) {
+          <div class="skeleton-card">
+            <div class="skeleton skeleton-thumb"></div>
+            <div class="skeleton skeleton-line"></div>
+            <div class="skeleton skeleton-line short"></div>
+          </div>
+        }
+      </div>
+    } @else if (filteredCars().length === 0) {
+      <div class="empty-state anim-fade-in">No cars match your filters.</div>
+    } @else {
+      <div class="grid grid-3">
+        @for (car of filteredCars(); track car.id; let i = $index) {
+          <div class="car-card anim-fade-up" [style.--stagger]="i % 9">
+            <a [routerLink]="['/cars', car.id]">
+              <div class="car-thumb">
+                @if (fullImageUrl(car.primaryImageUrl); as imgUrl) {
+                  <img [src]="imgUrl" alt="{{ car.brand }} {{ car.model }}" loading="lazy" (error)="onImgError($event)" />
+                } @else {
+                  <span>🚗</span>
+                }
+                @if (car.images.length > 1) {
+                  <span class="photo-count">📷 {{ car.images.length }}</span>
+                }
+              </div>
+              <div class="car-body">
+                <div class="flex-between">
+                  <h3>{{ car.brand }} {{ car.model }}</h3>
+                  <span class="badge" [class]="statusBadgeClass(car.status)">{{ car.status }}</span>
+                </div>
+                <p class="text-sm">{{ car.categoryName }} · {{ car.branchName }} · {{ car.year }}</p>
+                <p class="text-sm text-muted">Plate: {{ car.plateNumber }} · {{ car.currentMileage }} km</p>
+                @if (car.status !== 'Available'; as _) {
+                  @if (activeBookingFor(car.id); as booking) {
+                    <p class="text-sm booked-range">
+                      📅 Booked: {{ booking.startDate | date:'mediumDate' }} → {{ booking.endDate | date:'mediumDate' }}
+                    </p>
+                  }
+                }
+                <div class="flex-between mt-16">
+                  <strong class="price">{{ car.dailyRate ?? '—' }} EGP<span class="text-muted text-sm">/day</span></strong>
+                  <span class="btn btn-primary btn-sm">View & Book</span>
+                </div>
+              </div>
+            </a>
+            @if (canManage) {
+              <div class="admin-actions">
+                <a [routerLink]="['/admin/cars', car.id, 'edit']" class="btn btn-outline btn-sm">✏️ Edit</a>
+                <button type="button" class="btn btn-danger btn-sm" [disabled]="deletingId() === car.id"
+                        (click)="deleteCar($event, car)">
+                  @if (deletingId() === car.id) { <span class="spinner"></span> } @else { 🗑️ Delete }
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+</section>

@@ -1,0 +1,121 @@
+<section class="container page">
+  <div class="section-title">
+    <div>
+      <h2>Rental Contracts</h2>
+      <p class="text-sm">Check cars out to customers, and check them back in</p>
+    </div>
+    <button class="btn btn-accent btn-sm" (click)="openCheckout()">+ Check-out a Car</button>
+  </div>
+
+  @if (loading()) {
+    <div class="flex-center" style="padding:60px 0;"><span class="spinner"></span></div>
+  } @else if (contracts().length === 0) {
+    <div class="empty-state">No contracts yet.</div>
+  } @else {
+    <div class="table-wrap card">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Employee</th>
+            <th>Pickup</th>
+            <th>Return</th>
+            <th>Status</th>
+            <th>Total</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of contracts(); track c.id) {
+            <tr>
+              <td>#{{ c.id }}</td>
+              <td>{{ c.employeeName }}</td>
+              <td>{{ c.actualPickupDate | date:'short' }}</td>
+              <td>{{ c.actualReturnDate ? (c.actualReturnDate | date:'short') : '—' }}</td>
+              <td><span class="badge" [class]="statusBadge(c.status)">{{ c.status }}</span></td>
+              <td>{{ c.totalAmount }} EGP</td>
+              <td>
+                @if (c.status === 'Active') {
+                  <button class="btn btn-primary btn-sm" (click)="openCheckin(c.id)">Check-in</button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
+
+<!-- Checkout Modal -->
+@if (showCheckoutModal()) {
+  <div class="modal-overlay" (click)="showCheckoutModal.set(false)">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <h3>Check-out a Car</h3>
+      <p class="text-sm mb-24">Hand over the car to the customer and open a rental contract</p>
+
+      <form [formGroup]="checkoutForm" (ngSubmit)="submitCheckout()">
+        <div class="form-group">
+          <label class="form-label">Confirmed booking</label>
+          <select class="form-control" formControlName="bookingId">
+            <option [ngValue]="null" disabled>Select a booking</option>
+            @for (b of confirmedBookings(); track b.id) {
+              <option [ngValue]="b.id">#{{ b.id }} — {{ b.customerName }} — {{ b.carPlateNumber }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Pickup mileage (km)</label>
+          <input class="form-control" type="number" formControlName="pickupMileage" />
+        </div>
+
+        <div class="flex gap-12 mt-16">
+          <button type="button" class="btn btn-outline w-full" (click)="showCheckoutModal.set(false)">Cancel</button>
+          <button type="submit" class="btn btn-accent w-full" [disabled]="submitting()">
+            @if (submitting()) { <span class="spinner"></span> } @else { Confirm Check-out }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Checkin Modal -->
+@if (showCheckinModal()) {
+  <div class="modal-overlay" (click)="showCheckinModal.set(false)">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <h3>Check-in the Car</h3>
+      <p class="text-sm mb-24">Record the return inspection. Penalties are calculated automatically.</p>
+
+      <form [formGroup]="checkinForm" (ngSubmit)="submitCheckin()">
+        <div class="form-group">
+          <label class="form-label">Return mileage (km)</label>
+          <input class="form-control" type="number" formControlName="returnMileage" />
+        </div>
+
+        <div class="form-group flex gap-12" style="align-items:center;">
+          <input type="checkbox" id="hasDamage" formControlName="hasDamage" style="width:auto" />
+          <label for="hasDamage" class="form-label" style="margin:0">Damage found during inspection</label>
+        </div>
+
+        @if (checkinForm.get('hasDamage')?.value) {
+          <div class="form-group">
+            <label class="form-label">Damage notes</label>
+            <input class="form-control" formControlName="damageNotes" placeholder="Scratch on rear bumper..." />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Estimated damage cost (EGP)</label>
+            <input class="form-control" type="number" formControlName="estimatedDamageCost" />
+          </div>
+        }
+
+        <div class="flex gap-12 mt-16">
+          <button type="button" class="btn btn-outline w-full" (click)="showCheckinModal.set(false)">Cancel</button>
+          <button type="submit" class="btn btn-accent w-full" [disabled]="submitting()">
+            @if (submitting()) { <span class="spinner"></span> } @else { Confirm Check-in }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

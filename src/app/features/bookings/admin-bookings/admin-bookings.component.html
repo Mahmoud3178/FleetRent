@@ -1,0 +1,132 @@
+<section class="container page anim-fade-up">
+  <div class="section-title">
+    <div>
+      <h2>Bookings</h2>
+      <p class="text-sm">Pending → Check-out (Confirmed) → Check-in (Completed)</p>
+    </div>
+  </div>
+
+  <div class="filter-tabs mb-16">
+    @for (f of ['All', 'Pending', 'Confirmed', 'Completed', 'Cancelled']; track f) {
+      <button
+        class="filter-tab"
+        [class.active]="statusFilter() === f"
+        (click)="statusFilter.set(f)">
+        {{ f }}
+      </button>
+    }
+  </div>
+
+  @if (loading()) {
+    <div class="flex-center" style="padding:60px 0;"><span class="spinner"></span></div>
+  } @else if (filteredRows().length === 0) {
+    <div class="empty-state">مفيش حجوزات بالحالة دي.</div>
+  } @else {
+    <div class="table-wrap card">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Customer</th>
+            <th>Car</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Status</th>
+            <th>Est. Cost</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of filteredRows(); track row.id) {
+            <tr class="anim-fade-up">
+              <td>#{{ row.id }}</td>
+              <td>{{ row.customerName }}</td>
+              <td>{{ row.carPlateNumber }}</td>
+              <td>{{ row.startDate | date:'mediumDate' }}</td>
+              <td>{{ row.endDate | date:'mediumDate' }}</td>
+              <td><span class="badge" [class]="statusBadge(row.status)">{{ row.status }}</span></td>
+              <td>{{ row.estimatedCost }} EGP</td>
+              <td>
+                @if (row.status === 'Pending') {
+                  <button class="btn btn-accent btn-sm" (click)="openCheckout(row)">Check-out</button>
+                } @else if (row.status === 'Confirmed' && row.contract) {
+                  <button class="btn btn-primary btn-sm" (click)="openCheckin(row)">Check-in</button>
+                } @else if (row.status === 'Confirmed') {
+                  <span class="text-sm">No active contract found</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
+
+<!-- Checkout Modal -->
+@if (showCheckoutModal()) {
+  <div class="modal-overlay" (click)="showCheckoutModal.set(false)">
+    <div class="modal-box anim-scale-in" (click)="$event.stopPropagation()">
+      <h3>Check-out a Car</h3>
+      <p class="text-sm mb-24">
+        تسليم عربية الحجز #{{ activeBooking()?.id }} ({{ activeBooking()?.carPlateNumber }}) للعميل {{ activeBooking()?.customerName }} وفتح عقد إيجار
+      </p>
+
+      <form [formGroup]="checkoutForm" (ngSubmit)="submitCheckout()">
+        <div class="form-group">
+          <label class="form-label">Pickup mileage (km)</label>
+          <input class="form-control" type="number" formControlName="pickupMileage" />
+        </div>
+
+        <div class="flex gap-12 mt-16">
+          <button type="button" class="btn btn-outline w-full" (click)="showCheckoutModal.set(false)">Cancel</button>
+          <button type="submit" class="btn btn-accent w-full" [disabled]="submitting()">
+            @if (submitting()) { <span class="spinner"></span> } @else { Confirm Check-out }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Checkin Modal -->
+@if (showCheckinModal()) {
+  <div class="modal-overlay" (click)="showCheckinModal.set(false)">
+    <div class="modal-box anim-scale-in" (click)="$event.stopPropagation()">
+      <h3>Check-in the Car</h3>
+      <p class="text-sm mb-24">
+        استلام عربية الحجز #{{ activeBooking()?.id }} ({{ activeBooking()?.carPlateNumber }}). الغرامات بتتحسب تلقائيًا.
+      </p>
+
+      <form [formGroup]="checkinForm" (ngSubmit)="submitCheckin()">
+        <div class="form-group">
+          <label class="form-label">Return mileage (km)</label>
+          <input class="form-control" type="number" formControlName="returnMileage" />
+        </div>
+
+        <div class="form-group flex gap-12" style="align-items:center;">
+          <input type="checkbox" id="hasDamageAdmin" formControlName="hasDamage" style="width:auto" />
+          <label for="hasDamageAdmin" class="form-label" style="margin:0">Damage found during inspection</label>
+        </div>
+
+        @if (checkinForm.get('hasDamage')?.value) {
+          <div class="form-group">
+            <label class="form-label">Damage notes</label>
+            <input class="form-control" formControlName="damageNotes" placeholder="Scratch on rear bumper..." />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Estimated damage cost (EGP)</label>
+            <input class="form-control" type="number" formControlName="estimatedDamageCost" />
+          </div>
+        }
+
+        <div class="flex gap-12 mt-16">
+          <button type="button" class="btn btn-outline w-full" (click)="showCheckinModal.set(false)">Cancel</button>
+          <button type="submit" class="btn btn-accent w-full" [disabled]="submitting()">
+            @if (submitting()) { <span class="spinner"></span> } @else { Confirm Check-in }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

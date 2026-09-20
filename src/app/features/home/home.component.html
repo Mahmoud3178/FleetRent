@@ -1,0 +1,173 @@
+<section class="hero">
+  <div class="hero-bg ken-burns"></div>
+  <div class="hero-overlay"></div>
+  <span class="blob blob-accent" style="top:-60px; left:-40px; width:260px; height:260px;"></span>
+  <span class="blob blob-blue" style="bottom:-80px; right:-40px; width:320px; height:320px; animation-delay: -6s;"></span>
+
+  <div class="container hero-inner">
+    <div class="hero-text">
+      <span class="eyebrow">FleetRent · Car Rental & Fleet Management</span>
+      <h1>Drive your way,<br>whenever you need.</h1>
+      <p class="hero-sub">
+        Browse our fleet, book instantly, and pick up from the nearest branch.
+        Transparent pricing, no hidden fees.
+      </p>
+      <div class="flex gap-16 mt-24">
+        <a routerLink="/cars" class="btn btn-accent">Browse Cars</a>
+        <a routerLink="/auth/register" class="btn btn-outline" style="color:white;border-color:rgba(255,255,255,0.3)">Create Account</a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <span class="hero-car float-y">🚗</span>
+      <span class="hero-badge hero-badge-1 float-rotate">✅ Instant booking</span>
+      <span class="hero-badge hero-badge-2 float-y" style="animation-delay:-2s;">⭐ 4.9/5 avg. rating</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Animated stats strip ===== -->
+<section class="stats-strip">
+  <div class="container grid grid-4">
+    <div class="stat-box" appReveal="up">
+      <span class="stat-number"><span appCountUp [countTo]="500" suffix="+">0</span></span>
+      <p class="text-sm text-muted">Cars in the fleet</p>
+    </div>
+    <div class="stat-box" appReveal="up" [revealDelay]="80">
+      <span class="stat-number"><span appCountUp [countTo]="24" suffix="+">0</span></span>
+      <p class="text-sm text-muted">Branches nationwide</p>
+    </div>
+    <div class="stat-box" appReveal="up" [revealDelay]="160">
+      <span class="stat-number"><span appCountUp [countTo]="12000" suffix="+">0</span></span>
+      <p class="text-sm text-muted">Happy renters</p>
+    </div>
+    <div class="stat-box" appReveal="up" [revealDelay]="240">
+      <span class="stat-number"><span appCountUp [countTo]="24" suffix="/7">0</span></span>
+      <p class="text-sm text-muted">Roadside support</p>
+    </div>
+  </div>
+</section>
+
+<section class="container page">
+  <div class="section-title" appReveal="up">
+    <h2>Available now</h2>
+    <a routerLink="/cars" class="text-sm link-accent">View all cars →</a>
+  </div>
+
+  @if (loading()) {
+    <div class="flex-center" style="padding:60px 0;"><span class="spinner"></span></div>
+  } @else if (cars().length === 0) {
+    <div class="empty-state">No cars available right now. Check back soon!</div>
+  } @else {
+    <div class="grid grid-3">
+      @for (car of cars(); track car.id; let i = $index) {
+        <a [routerLink]="['/cars', car.id]" class="car-card" appReveal="up" [revealDelay]="i * 60">
+          <div class="car-thumb">
+            @if (fullImageUrl(car.primaryImageUrl); as imgUrl) {
+              <img [src]="imgUrl" alt="{{ car.brand }} {{ car.model }}" loading="lazy" />
+            } @else {
+              <span>🚗</span>
+            }
+          </div>
+          <div class="car-body">
+            <div class="flex-between">
+              <h3>{{ car.brand }} {{ car.model }}</h3>
+              <span class="badge badge-success">Available</span>
+            </div>
+            <p class="text-sm">{{ car.categoryName }} · {{ car.branchName }} · {{ car.year }}</p>
+            <div class="flex-between mt-16">
+              <strong class="price">{{ car.dailyRate ?? '—' }} EGP<span class="text-muted text-sm">/day</span></strong>
+              <span class="btn btn-primary btn-sm">Details</span>
+            </div>
+          </div>
+        </a>
+      }
+    </div>
+  }
+</section>
+
+<section class="how-it-works">
+  <div class="container">
+    <h2 class="text-center" appReveal="up">How it works</h2>
+    <div class="grid grid-3 mt-32">
+      <div class="step" appReveal="up">
+        <div class="step-num">1</div>
+        <h4>Choose a car</h4>
+        <p>Filter by branch and category to find the perfect ride.</p>
+      </div>
+      <div class="step" appReveal="up" [revealDelay]="120">
+        <div class="step-num">2</div>
+        <h4>Book your dates</h4>
+        <p>Pick your start and end dates — we check availability instantly.</p>
+      </div>
+      <div class="step" appReveal="up" [revealDelay]="240">
+        <div class="step-num">3</div>
+        <h4>Pick up & drive</h4>
+        <p>Visit the branch, sign your contract, and hit the road.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Why choose us ===== -->
+<section class="container page">
+  <div class="section-title" appReveal="up">
+    <h2>Why rent with FleetRent</h2>
+  </div>
+  <div class="grid grid-4">
+    <div class="feature-box" appReveal="up">
+      <span class="feature-icon">💳</span>
+      <h4>No hidden fees</h4>
+      <p class="text-sm text-muted">The price you see at booking is exactly what you pay at checkout.</p>
+    </div>
+    <div class="feature-box" appReveal="up" [revealDelay]="80">
+      <span class="feature-icon">🛠️</span>
+      <h4>Well-maintained fleet</h4>
+      <p class="text-sm text-muted">Every car goes through scheduled maintenance before it's handed over.</p>
+    </div>
+    <div class="feature-box" appReveal="up" [revealDelay]="160">
+      <span class="feature-icon">⚡</span>
+      <h4>Instant confirmation</h4>
+      <p class="text-sm text-muted">No waiting for a callback — your booking is confirmed the moment you submit it.</p>
+    </div>
+    <div class="feature-box" appReveal="up" [revealDelay]="240">
+      <span class="feature-icon">📍</span>
+      <h4>Branches near you</h4>
+      <p class="text-sm text-muted">Pick up and drop off at whichever branch is most convenient.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Testimonials ===== -->
+<section class="testimonials">
+  <div class="container">
+    <div class="section-title" appReveal="up">
+      <h2>What renters are saying</h2>
+    </div>
+    <div class="grid grid-3">
+      @for (t of testimonials; track t.name; let i = $index) {
+        <div class="testimonial-card" appReveal="up" [revealDelay]="i * 100">
+          <p class="testimonial-quote">"{{ t.quote }}"</p>
+          <div class="testimonial-author">
+            <span class="testimonial-avatar">{{ t.avatar }}</span>
+            <div>
+              <strong>{{ t.name }}</strong>
+              <p class="text-sm text-muted">{{ t.role }}</p>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ===== Closing CTA ===== -->
+<section class="cta-band" appReveal="up">
+  <div class="container flex-between">
+    <div>
+      <h2 style="color:white;">Ready to hit the road?</h2>
+      <p style="color:rgba(255,255,255,0.75)">Browse the fleet and book your next ride in under two minutes.</p>
+    </div>
+    <a routerLink="/cars" class="btn btn-accent">Browse Cars →</a>
+  </div>
+</section>

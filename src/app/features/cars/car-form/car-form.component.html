@@ -1,0 +1,146 @@
+<section class="container page" style="max-width:680px;">
+  <a routerLink="/admin" class="text-sm text-muted">← Back to admin</a>
+
+  <div class="card mt-16 anim-fade-up">
+    @if (loading()) {
+      <div class="flex-center" style="padding:60px 0;"><span class="spinner"></span></div>
+    } @else {
+      <h2>{{ isEditMode ? 'Edit car' : 'Add a new car' }}</h2>
+      <p class="text-sm mb-24">
+        {{ isEditMode ? 'Update this vehicle\'s details, status and photos' : 'Register a new vehicle to the fleet' }}
+      </p>
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="grid grid-2">
+          <div class="form-group">
+            <label class="form-label">Plate number</label>
+            <input class="form-control" formControlName="plateNumber" placeholder="ABC-1234" />
+            @if (form.get('plateNumber')?.invalid && form.get('plateNumber')?.touched) {
+              <p class="form-error">Plate number is required</p>
+            }
+          </div>
+          <div class="form-group">
+            <label class="form-label">Year</label>
+            <input class="form-control" type="number" formControlName="year" />
+            @if (form.get('year')?.invalid && form.get('year')?.touched) {
+              <p class="form-error">Enter a valid year</p>
+            }
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="form-group">
+            <label class="form-label">Brand</label>
+            <input class="form-control" formControlName="brand" placeholder="Toyota" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Model</label>
+            <input class="form-control" formControlName="model" placeholder="Corolla" />
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="form-group">
+            <label class="form-label">Branch</label>
+            <select class="form-control" formControlName="branchId">
+              <option [ngValue]="null" disabled>Select branch</option>
+              @for (b of branches(); track b.id) {
+                <option [ngValue]="b.id">{{ b.name }} ({{ b.city }})</option>
+              }
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select class="form-control" formControlName="carCategoryId">
+              <option [ngValue]="null" disabled>Select category</option>
+              @for (c of categories(); track c.id) {
+                <option [ngValue]="c.id">{{ c.name }} — {{ c.dailyRate }} EGP/day</option>
+              }
+            </select>
+            <p class="form-hint">
+              Daily rate is set per category, not per car.
+              <a routerLink="/admin/categories" class="link-accent">Manage category prices →</a>
+            </p>
+          </div>
+        </div>
+
+        @if (isEditMode) {
+          <div class="grid grid-2">
+            <div class="form-group">
+              <label class="form-label">Status</label>
+              <select class="form-control" formControlName="status">
+                @for (s of statuses; track s) {
+                  <option [ngValue]="s">{{ s }}</option>
+                }
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Current mileage (km)</label>
+              <input class="form-control" type="number" formControlName="currentMileage" />
+            </div>
+          </div>
+        }
+
+        @if (isEditMode && existingImages().length > 0) {
+          <div class="form-group">
+            <label class="form-label">Current photos</label>
+            <div class="image-previews">
+              @for (img of existingImages(); track img.id) {
+                <div class="preview-thumb" [class.is-primary]="img.isPrimary">
+                  <img [src]="fullImageUrl(img.imageUrl)" alt="car photo" />
+                  @if (img.isPrimary) {
+                    <span class="cover-badge">Cover</span>
+                  }
+                  <div class="thumb-overlay">
+                    @if (busyImageId() === img.id) {
+                      <span class="spinner"></span>
+                    } @else {
+                      @if (!img.isPrimary) {
+                        <button type="button" class="thumb-action" title="Set as cover" (click)="setPrimary(img)">⭐</button>
+                      }
+                      <button type="button" class="thumb-action danger" title="Delete photo" (click)="deleteExistingImage(img)">✕</button>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <div class="form-group">
+          <label class="form-label">
+            {{ isEditMode ? 'Add more photos' : 'Car Images' }}
+            <span class="text-muted">(you can select multiple)</span>
+          </label>
+          <input class="form-control" type="file" accept="image/*" multiple (change)="onFilesSelected($event)" />
+          <p class="form-hint">
+            JPG, PNG or WEBP, up to 5MB each.
+            {{ !isEditMode ? ' First image will be used as the cover photo.' : '' }}
+          </p>
+        </div>
+
+        @if (imagePreviews().length > 0) {
+          <div class="image-previews">
+            @for (preview of imagePreviews(); track preview.url; let i = $index) {
+              <div class="preview-thumb anim-scale-in">
+                <img [src]="preview.url" alt="preview" />
+                @if (i === 0 && !isEditMode) {
+                  <span class="cover-badge">Cover</span>
+                }
+                <button type="button" class="remove-btn" (click)="removeImage(i)">✕</button>
+              </div>
+            }
+          </div>
+        }
+
+        <button class="btn btn-accent btn-block mt-16" type="submit" [disabled]="saving()">
+          @if (saving()) {
+            <span class="spinner"></span> {{ isEditMode ? 'Saving…' : 'Adding…' }}
+          } @else {
+            {{ isEditMode ? 'Save changes' : 'Add Car' }}
+          }
+        </button>
+      </form>
+    }
+  </div>
+</section>

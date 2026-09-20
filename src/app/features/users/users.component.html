@@ -1,0 +1,45 @@
+<section class="container page">
+  <div class="section-title">
+    <div>
+      <h2>Users</h2>
+      <p class="text-sm">All registered customers, employees and admins</p>
+    </div>
+    <select class="form-control" style="width:auto" [ngModel]="roleFilter()" (ngModelChange)="roleFilter.set($event)">
+      <option value="All">All roles</option>
+      <option value="Admin">Admin</option>
+      <option value="Employee">Employee</option>
+      <option value="Customer">Customer</option>
+    </select>
+  </div>
+
+  @if (loading()) {
+    <div class="flex-center" style="padding:60px 0;"><span class="spinner"></span></div>
+  } @else if (filteredUsers().length === 0) {
+    <div class="empty-state">No users found.</div>
+  } @else {
+    <div class="table-wrap card">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Role</th>
+            <th>License</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of filteredUsers(); track u.id) {
+            <tr>
+              <td><strong>{{ u.fullName }}</strong></td>
+              <td>{{ u.email }}</td>
+              <td>{{ u.phoneNumber }}</td>
+              <td><span class="badge" [class]="roleBadge(u.role)">{{ u.role }}</span></td>
+              <td>{{ u.drivingLicenseNumber || '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
