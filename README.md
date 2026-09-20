@@ -4,26 +4,19 @@
 
 ## 🚀 التشغيل خطوة بخطوة
 
-### 1) تثبيت الحزم
+### 1)  للتسجيل ك ادمن
 
-```bash
-npm i
-```
+## ⚠️ Demo Access
 
-### 2) اضبط رابط الـ API بتاعك
+This is a live demo deployment. You can explore the admin dashboard using the credentials below:
 
-افتح الملفين دول وحط رابط الـ API الصحيح (الموجود حاليًا: رابط Monster ASP الافتراضي):
+**Admin Login**
+- Email: `admin@fleetrent.com`
+- Password: `Admin@123`
 
-- `src/environments/environment.ts` (وضع التطوير)
-- `src/environments/environment.prod.ts` (وضع الإنتاج)
+> ⚠️ **Note:** These are demo credentials for testing/showcase purposes only. Please do not use this account to store real or sensitive data.
 
-```ts
-export const environment = {
-  production: false,
-  apiUrl: 'https://your-api-domain.runasp.net/api'  // 👈 غيّر ده
-};
-```
-
+🔗 Live Demo: [fleet-rent-eight.vercel.app](https://fleet-rent-eight.vercel.app/)
 ### 3) شغّل المشروع محليًا
 
 ```bash
